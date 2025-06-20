@@ -1,54 +1,64 @@
-# React + TypeScript + Vite
+# React Table Component
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A simple, customizable and responsive React table component built with Typescript
 
-Currently, two official plugins are available:
+![SASS](https://img.shields.io/badge/SASS-hotpink.svg?style=for-the-badge&logo=SASS&logoColor=white)
+![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
+![Vite](https://img.shields.io/badge/vite-%23646CFF.svg?style=for-the-badge&logo=vite&logoColor=white)
+![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+## Installation
+In your project, just copy and paste this line :
+```
+npm i @thomasbfrd/table
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Features
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+- This table takes a generic object as input. The filtered and sorted types are strings, dates and numbers.
+- You can sort data via each column header.
+- You can filter data using the search input.
+- The table is paginated, and you can display 10, 25 or 50 rows per page.
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+
+## Usage
+The props :
 ```
+data: Array<T>; // Data to display in the table body.
+headers: Array<Header>; // Data to display in the table header.
+backgroundHeaderFooterColor?: string; // Color of the background table footer.
+backgroundBodyTable?: string; // Color of the background table body.
+activeColor?: string; // Color of active color (like active search input focused)
+textPrimaryColor?: string; // Color of the primary text
+textSecondaryColor?: string; // Color of the secondary color text
+hoverColor?: string; // Color for the hover
+```
+
+### Importation :
+```
+import { Table, TableProps } from "@thomasbfrd/table";
+import "@thomasbfrd/table/dist/table.css";
+```
+
+Example of input data :
+```
+const headers = [
+{ key: "name", label: "Name" },
+{ key: "age", label: "Age" },
+];
+
+const data = [
+{ name: "Alice", age: 28 },
+{ name: "Bob", age: 34 },
+];
+
+<Table data={data} headers={headers} />
+```
+
+### Customization
+
+This table has default styles, but you can add your own colors in the respective props.
+
+## Demo
+
+![TableDemo](https://i.postimg.cc/J4SWQ83X/table-demo.png)
