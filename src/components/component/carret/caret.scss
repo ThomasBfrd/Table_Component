@@ -1,0 +1,19 @@
+.caret {
+  fill: var(--table-text-primary-color);
+}
+
+.footer-previous {
+  transform: rotate(-90deg);
+}
+
+.footer-next {
+  transform: rotate(90deg);
+}
+
+.footer-last {
+  transform: rotate(180deg);
+}
+
+.stroke-footer-item {
+  stroke: var(--table-text-primary-color);
+}
