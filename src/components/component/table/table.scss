@@ -91,11 +91,11 @@
 }
 
 .options-header {
-  width: 100%;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-around;
-  gap: 15px;
+  justify-content: center;
+  gap: 0;
   margin-bottom: 15px;
 
   & .search-input {
@@ -135,6 +135,8 @@
   display: flex;
   align-items: center;
   position: relative;
+  margin-bottom: 30px;
+  margin-right: 20px;
 }
 
 .range-data-current {
@@ -245,12 +247,18 @@ tbody > tr:hover {
   overflow-x: hidden;
 }
 
-@media screen and (max-width: 480px) {
+@media screen and (min-width: 480px) {
   .options-header {
-    flex-direction: column;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
     align-items: center;
-    justify-content: center;
-    gap: 0;
+    justify-content: space-around;
+    gap: 15px;
     margin-bottom: 15px;
+  }
+
+  .range-data {
+    margin-bottom: 0;
   }
 }

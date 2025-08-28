@@ -20,9 +20,16 @@ export interface TableProps<T extends object> {
 
 const ranges: Array<number> = [10, 25, 50, 100];
 
-const Table = <T extends object>({data, headers, backgroundHeaderFooterColor = "#ffffff",
-                                     backgroundBodyTable = "#f4f4f4", activeColor = "#a38cef", textPrimaryColor = "#FFFFFE",
-                                     textSecondaryColor = "#2D2C2F", hoverColor = "#e8e0ff"}: TableProps<T>) => {
+const Table = <T extends object>({
+                                     data,
+                                     headers,
+                                     backgroundHeaderFooterColor = "#ffffff",
+                                     backgroundBodyTable = "#f4f4f4",
+                                     activeColor = "#a38cef",
+                                     textPrimaryColor = "#FFFFFE",
+                                     textSecondaryColor = "#2D2C2F",
+                                     hoverColor = "#e8e0ff"
+                                 }: TableProps<T>) => {
 
     const [maxValues, setMaxValues] = useState<number>(10);
 
@@ -52,7 +59,8 @@ const Table = <T extends object>({data, headers, backgroundHeaderFooterColor = "
         document.documentElement.style.setProperty("--table-text-secondary-color", textSecondaryColor);
         document.documentElement.style.setProperty("--table-hover-color", hoverColor);
 
-        return () => {};
+        return () => {
+        };
 
     }, [activeColor, backgroundBodyTable, backgroundHeaderFooterColor, hoverColor, textPrimaryColor, textSecondaryColor]);
 
@@ -62,6 +70,7 @@ const Table = <T extends object>({data, headers, backgroundHeaderFooterColor = "
                 setIsMaxValueRangeOpened(false);
             }
         }
+
         document.addEventListener('mousedown', handleClickOutside);
 
         return () => {
@@ -190,60 +199,59 @@ const Table = <T extends object>({data, headers, backgroundHeaderFooterColor = "
             </div>
             <div className="table-and-footer">
 
-            <div className="table-wrapper">
-                <table className="table">
-                    <thead>
-                    <tr>
-                        {headers.map((header: Header, index: number) => (
-                            <th key={index} className="header-item-content">
-                                <div className="header-content-wrapper">
-                                    <p>{header.title}</p>
-                                    <div className="sort-header-container">
-                                        {sortBy === header.propertyName && sortOrder !== null ? (
-                                        <span className={`sort ${sortOrder === "asc" ? "up" : "down"}`}
-                                              onClick={() => sortData(header.propertyName)}>
-                                            <Caret svgName={"next-previous-sort"} />
-                                        </span>
-                                        ) : (
-                                            <span className="sort" onClick={() => sortData(header.propertyName)}>
-                                                <Caret svgName={"double"} />
-                                        </span>
-                                        )}
+                <div className="table-wrapper">
+                    <table className="table">
+                        <thead>
+                        <tr>
+                            {headers.map((header: Header, index: number) => (
+                                <th key={index} className="header-item-content">
+                                    <div className="header-content-wrapper"
+                                         onClick={() => sortData(header.propertyName)}>
+                                        <p>{header.title}</p>
+                                        <div className="sort-header-container">
+                                            {sortBy === header.propertyName && sortOrder !== null ? (
+                                                <span className={`sort ${sortOrder === "asc" ? "up" : "down"}`}>
+                                                    <Caret svgName={"next-previous-sort"}/>
+                                                </span>) : (
+                                                <span className="sort">
+                                                    <Caret svgName={"double"}/>
+                                                </span>
+                                            )}
+                                        </div>
                                     </div>
-                                </div>
-                            </th>
-                        ))}
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {
-                        receiveData && receiveData.length > 0 ? (receiveData.map((row: T, index: number) => (
-                            <tr key={index}>
-                                {Object.values(row).map((value: string | number | Date, i: number) => (
-                                    <td key={i}>{value instanceof Date ? value.toDateString() : value}</td>
-                                ))}
-                            </tr>
-                        ))) : <tr>
-                            <td colSpan={9}>No data available.</td>
+                                </th>
+                            ))}
                         </tr>
-                    }
-                    </tbody>
-                </table>
-            </div>
+                        </thead>
+                        <tbody>
+                        {
+                            receiveData && receiveData.length > 0 ? (receiveData.map((row: T, index: number) => (
+                                <tr key={index}>
+                                    {Object.values(row).map((value: string | number | Date, i: number) => (
+                                        <td key={i}>{value instanceof Date ? value.toDateString() : value}</td>
+                                    ))}
+                                </tr>
+                            ))) : <tr>
+                                <td colSpan={9}>No data available.</td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
                 <div className="footer-tab">
                     <span>Page {page} / {totalPages}</span>
                     <span>{data.indexOf(data[startIndex]) + 1}-{data.lastIndexOf(data[endIndex]) + (page === totalPages ? 1 : 0)} / {totalData}</span>
                     <span className="footer-tab-item" onClick={() => handleSetPage('first')}>
-                        <Caret svgName={"first-last"} />
+                        <Caret svgName={"first-last"}/>
                     </span>
                     <span className="footer-tab-item" onClick={() => handleSetPage('prev')}>
-                        <Caret svgName={"next-previous-sort"} className="footer-previous" />
+                        <Caret svgName={"next-previous-sort"} className="footer-previous"/>
                     </span>
                     <span className="footer-tab-item" onClick={() => handleSetPage('next')}>
-                        <Caret svgName="next-previous-sort" className="footer-next" />
+                        <Caret svgName="next-previous-sort" className="footer-next"/>
                     </span>
                     <span className="footer-tab-item" onClick={() => handleSetPage('last')}>
-                        <Caret svgName={"first-last"} className="footer-last" />
+                        <Caret svgName={"first-last"} className="footer-last"/>
                     </span>
                 </div>
             </div>
