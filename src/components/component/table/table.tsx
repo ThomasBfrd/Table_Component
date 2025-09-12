@@ -1,5 +1,5 @@
 import "./table.scss";
-import {type ChangeEvent, type RefObject, useEffect, useMemo, useRef, useState} from "react";
+import {type ChangeEvent, type RefObject, useCallback, useEffect, useMemo, useRef, useState} from "react";
 import Caret from "../carret/caret";
 
 export interface Header {
@@ -23,12 +23,12 @@ const ranges: Array<number> = [10, 25, 50, 100];
 const Table = <T extends object>({
                                      data,
                                      headers,
-                                     backgroundHeaderFooterColor = "#ffffff",
-                                     backgroundBodyTable = "#f4f4f4",
-                                     activeColor = "#a38cef",
-                                     textPrimaryColor = "#FFFFFE",
-                                     textSecondaryColor = "#2D2C2F",
-                                     hoverColor = "#e8e0ff"
+                                     backgroundHeaderFooterColor = "#000",
+                                     backgroundBodyTable = "#ffffff",
+                                     activeColor = "#000",
+                                     textPrimaryColor = "#ffffff",
+                                     textSecondaryColor = "##2d3142",
+                                     hoverColor = "#EAEFEF"
                                  }: TableProps<T>) => {
 
     const [maxValues, setMaxValues] = useState<number>(10);
@@ -51,6 +51,67 @@ const Table = <T extends object>({
 
     const currentMaxValueRange: RefObject<HTMLDivElement | null> = useRef<HTMLDivElement | null>(null);
 
+    const sortData = useCallback((propertyName: string): void => {
+        setSortBy(propertyName);
+
+        setSortBy(propertyName);
+
+        if (sortOrder === 'desc') {
+            setSortOrder(null);
+        } else if (sortOrder === 'asc') {
+            setSortOrder("desc");
+        } else if (sortOrder === null) {
+            setSortOrder("asc");
+        }
+        setPage(1);
+        
+    }, [sortOrder])
+
+    const handleSearchItem = useCallback((event: ChangeEvent<HTMLInputElement>): void => {
+        setSearch(event.target.value);
+        
+    }, [])
+    
+    const onSortData = useCallback((data: Array<T>): Array<T> => {
+        
+        if (sortBy && sortBy !== "") {
+            return data.sort((a: T, b: T) => {
+                const aValue: T[keyof T] = a[sortBy as keyof T];
+                const bValue: T[keyof T] = b[sortBy as keyof T];
+    
+                if (typeof aValue === "string" && typeof bValue === "string") {
+                    return sortOrder === "asc" ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
+                }
+    
+                if (typeof aValue === "number" && typeof bValue === "number") {
+                    return sortOrder === "asc" ? aValue - bValue : bValue - aValue;
+                }
+    
+                if (aValue instanceof Date && bValue instanceof Date) {
+                    return sortOrder === "asc" ? aValue.getTime() - bValue.getTime() : bValue.getTime() - aValue.getTime();
+                }
+    
+                return 0;
+            })
+        }
+        
+        return data;
+    }, [sortBy, sortOrder])
+    
+    const onFilterData = useCallback((data: Array<T>): Array<T> => {
+        return data.filter((item: T) =>
+            Object.entries(item).some(([key, value]: [string, unknown]) => {
+                if (key && typeof value === "string" || typeof value === "number") {
+                    return value.toString().toLowerCase().includes(search.toLowerCase());
+                } else if (value instanceof Date) {
+                    return value.toDateString().toLowerCase().includes(search.toLowerCase());
+                } else {
+                    return false;
+                }
+            })
+        );
+    }, [search])
+    
     useEffect(() => {
         document.documentElement.style.setProperty("--table-background-header-and-footer-color", backgroundHeaderFooterColor);
         document.documentElement.style.setProperty("--table-background-body-color", backgroundBodyTable);
@@ -83,45 +144,11 @@ const Table = <T extends object>({
     }, [totalData, maxValues]);
 
     const receiveData: Array<T> = useMemo(() => {
-        const sortedData: Array<T> = [...data];
 
-        if (sortOrder !== null) {
-            sortedData.sort((a: T, b: T) => {
-                const aValue: T[keyof T] = a[sortBy as keyof T];
-                const bValue: T[keyof T] = b[sortBy as keyof T];
-
-                if (typeof aValue === "string" && typeof bValue === "string") {
-                    return sortOrder === "asc" ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
-                }
-
-                if (typeof aValue === "number" && typeof bValue === "number") {
-                    return sortOrder === "asc" ? aValue - bValue : bValue - aValue;
-                }
-
-                if (aValue instanceof Date && bValue instanceof Date) {
-                    return sortOrder === "asc" ? aValue.getTime() - bValue.getTime() : bValue.getTime() - aValue.getTime();
-                }
-
-                return 0;
-            })
-        }
-
-        let resultData: Array<T> = sortOrder !== null ? sortedData : [...data]
+        let resultData: Array<T> = sortOrder !== null ? onSortData([...data]) : [...data]
 
         if (search.length > 0) {
-            resultData = resultData.filter((item: T) =>
-                Object.entries(item).some(([key, value]: [string, unknown]) => {
-                    if (key && typeof value === "string" || typeof value === "number") {
-                        return value.toString().toLowerCase().includes(search.toLowerCase());
-                    } else if (value instanceof Date) {
-                        return value.toDateString().toLowerCase().includes(search.toLowerCase());
-                    } else {
-                        return false;
-                    }
-                })
-            );
-        } else {
-            resultData = sortOrder !== null ? sortedData : [...data]
+            resultData = onFilterData(resultData);
         }
 
         setTotalData(resultData.length);
@@ -134,7 +161,7 @@ const Table = <T extends object>({
         }
 
         return resultData.slice(startIndex, (page === totalPages ? endIndex + 1 : endIndex));
-    }, [data, sortOrder, search, page, maxValues, totalPages, startIndex, endIndex, sortBy, totalData]);
+    }, [sortOrder, onSortData, data, search.length, page, maxValues, totalPages, startIndex, endIndex, onFilterData, totalData]);
 
     function handleSetPage(key: string) {
         if (key === 'first') {
@@ -154,24 +181,6 @@ const Table = <T extends object>({
         setPage(1);
         setMaxValues(value);
         setIsMaxValueRangeOpened(false);
-    }
-
-
-    function sortData(propertyName: string): void {
-        setSortBy(propertyName);
-
-        if (sortOrder === 'desc') {
-            setSortOrder(null);
-        } else if (sortOrder === 'asc') {
-            setSortOrder("desc");
-        } else if (sortOrder === null) {
-            setSortOrder("asc");
-        }
-        setPage(1);
-    }
-
-    function handleSearchItem(event: ChangeEvent<HTMLInputElement>) {
-        setSearch(event.target.value);
     }
 
     return (
