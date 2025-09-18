@@ -18,7 +18,6 @@ export interface TableProps<T extends object> {
     hoverColor?: string;
 }
 
-const ranges: Array<number> = [10, 25, 50, 100];
 
 const Table = <T extends object>({
                                      data,
@@ -31,7 +30,9 @@ const Table = <T extends object>({
                                      hoverColor = "#EAEFEF"
                                  }: TableProps<T>) => {
 
-    const [maxValues, setMaxValues] = useState<number>(10);
+    const ranges: Array<number> = [10, 25, 50, 100];
+
+    const [maxValues, setMaxValues] = useState<number>(ranges[0]);
 
     const [page, setPage] = useState<number>(1);
 
@@ -52,8 +53,6 @@ const Table = <T extends object>({
     const currentMaxValueRange: RefObject<HTMLDivElement | null> = useRef<HTMLDivElement | null>(null);
 
     const sortData = useCallback((propertyName: string): void => {
-        setSortBy(propertyName);
-
         setSortBy(propertyName);
 
         if (sortOrder === 'desc') {
@@ -99,6 +98,7 @@ const Table = <T extends object>({
     }, [sortBy, sortOrder])
     
     const onFilterData = useCallback((data: Array<T>): Array<T> => {
+        setPage(1);
         return data.filter((item: T) =>
             Object.entries(item).some(([key, value]: [string, unknown]) => {
                 if (key && typeof value === "string" || typeof value === "number") {
